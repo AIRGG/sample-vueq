@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { useMyGlobalState } from 'src/stores/myglobalstate';
-import { reactive, Ref, ref } from 'vue';
+import { computed, reactive, Ref, ref, watch } from 'vue';
 import MyComponent from 'src/components/MyComponent.vue';
 
 const $q = useQuasar();
@@ -67,9 +67,55 @@ const toogleForm = () => {
   disableInp1.value = !disableInp1.value;
   hiddenInp2.value = !hiddenInp2.value;
 };
+
+// q-select
+// const officeSelect = ref('');
+// const officeData = ref('');
+// const warehouseSelect = ref('');
+// const warehouseData = ref('');
+
+const location = reactive({
+  officeSelect: '',
+  officeData: ['A', 'B', 'C'],
+  warehouseSelect: '',
+  warehouseData: [] as string[],
+});
+
+const wareData = reactive({
+  A: ['AA1', 'AA2', 'AA3'],
+  B: ['BB1', 'BB2', 'BB3'],
+  C: ['CC1', 'CC2', 'CC3'],
+});
+
+watch(
+  () => location.officeSelect,
+  (newVal, oldVal) => {
+    location.warehouseData = wareData[newVal as keyof typeof wareData];
+  }
+);
+// const listData = computed(() => location.officeSelect);
 </script>
 <template>
   <q-page padding>
+    {{ location }}
+    <div class="row">
+      <div class="col-6">
+        office
+        <q-select
+          v-model="location.officeSelect"
+          :options="location.officeData"
+          label="Standard"
+        />
+      </div>
+      <div class="col-6">
+        warehouse
+        <q-select
+          v-model="location.warehouseSelect"
+          :options="location.warehouseData"
+          label="Standard"
+        />
+      </div>
+    </div>
     <!-- button dengan global state, bisa diakses dimana aja -->
     <q-btn @click="myGlobalState.fnTambahinAngka" color="negative">
       Angka Asli: {{ myGlobalState.myangka }} klik untuk nambah angka dikali:
